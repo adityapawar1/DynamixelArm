@@ -1,0 +1,103 @@
+from dynamixel_helper import DxlHelper
+from time import sleep
+from constants import *
+from numpy import deg2rad, cos, sin, sqrt, arctan2, rad2deg
+
+class Arm:
+    def __init__(self, ids, offsets):
+        self.helper = DxlHelper("preset.json", verbosity="detailed")
+        self.ids = ids
+        self.motors = {}
+        self.motor_offsets = offsets
+        for id in self.ids:
+            self.motors.__setitem__(id, self.helper.get_motor(id))
+
+    def set_torque(self, motors, value):
+        for motor in motors:
+        	self.motors[motor].set_torque(value)
+
+    def theta_to_pos(self, theta): 
+        # print(int((theta/360)*4096))
+        return int((theta/360)*4096)
+
+    def set_angle(self, id, theta):
+        position = self.theta_to_pos(theta + self.motor_offsets[id])
+        self.motors[id].set_goal_position(position)
+
+    def set_angles(self, angles):
+        for id, theta in angles.items():
+            position = self.theta_to_pos(theta + self.motor_offsets[id])
+            self.motors[id].set_goal_position(position)
+            # sleep(1)
+    
+    def read_write_position(self, motor,js_value):
+        if abs(js_value) <= 0.1:
+            return
+        
+        dxl_unit,res= self.motors[motor].get_present_position()
+        if (dxl_unit+js_value) >= 4096: #cap the motor at this value so it doesn’t reset to position 0
+	        return
+        self.motors[motor].set_goal_position((int(dxl_unit+js_value))%4096)
+
+    def move(self, motor, axis, scaler):
+        value = axis*scaler
+        self.read_write_position(motor, value)
+
+
+class ArmPositionController:
+    def __init__(self, arm):
+        self.arm = arm
+        pass
+
+    def ik(self, py, px):
+        # Desired Position of End effector
+        # px = -14
+        # py = 3
+        # x and y are flipped
+
+
+        phi = 270
+        phi = deg2rad(phi)
+
+        # Equations for Inverse kinematics
+        wx = px - a3*cos(phi)
+        wy = py - a3*sin(phi)
+
+        delta = wx**2 + wy**2
+        c2 = ( delta -a1**2 -a2**2)/(2*a1*a2)
+        s2 = sqrt(1-c2**2)  # elbow down
+        theta_2 = arctan2(s2, c2)
+
+        s1 = ((a1+a2*c2)*wy - a2*s2*wx)/delta
+        c1 = ((a1+a2*c2)*wx + a2*s2*wy)/delta
+        theta_1 = arctan2(s1,c1)
+        theta_3 = phi-theta_1-theta_2
+
+        print('theta_1: ', rad2deg(theta_1)+180-14.25)
+        print('theta_2: ', rad2deg(theta_2)+90+14.25)
+        print('theta_3: ', rad2deg(theta_3))
+        
+        
+
+        return (rad2deg(theta_1)+180, rad2deg(theta_2)+90, rad2deg(theta_3))
+
+    def move(self, x, y):
+        angles = self.ik(x, y)
+        
+        thetas = {12: angles[0], 13: angles[1], 14: angles[2]}
+        print(thetas)
+        self.arm.set_angles(thetas)
+
+if __name__ == "__main__":
+    arm = Arm(ids, offsets)
+    controller = ArmPositionController(arm)
+    arm.set_torque(ids, True)
+    controller.move(0, 0)
+    sleep(1)
+    controller.move(5, 0)
+    sleep(1)
+    controller.move(5, 5)
+    sleep(1)
+    controller.move(10, 10)
+    # arm.set_torque(ids, True)
+    # arm.set_angles({12: 180, 13: 180, 14: 180})
