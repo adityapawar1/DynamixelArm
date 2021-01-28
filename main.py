@@ -12,7 +12,7 @@ controller = ArmPositionController(arm)
 arm.set_torque(ids, True)
 torque = True
 position = (0, 0)
-controller.move(position[0], position[1])
+controller.move(position[0], position[1], 1)
 
 class TextPrint(object):
     def __init__(self):
