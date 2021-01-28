@@ -118,7 +118,7 @@ while not done:
         if abs(joystick.get_axis(2)) >= 0.1:
 	        controller.arm.move(11, joystick.get_axis(2), 50)
 
-	if move:
+        if move:
             controller.move(position[0], position[1])
 
         # arm.move(11, joystick.get_axis(2), -100)
