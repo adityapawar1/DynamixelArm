@@ -3,6 +3,7 @@ from inputs import get_gamepad
 from time import sleep
 from constants import *
 from numpy import deg2rad, cos, sin, sqrt, arctan2, rad2deg
+import math
 
 class Arm:
     def __init__(self, ids, offsets):
@@ -31,11 +32,11 @@ class Arm:
             self.motors[id].set_goal_position(position)
             sleep(delay)
     
-    def read_write_positon(self, motor,js_value):
+    def read_write_position(self, motor,js_value):
         dxl_unit,res= self.motors[motor].get_present_position()
         if (dxl_unit+js_value) >= 4096: #cap the motor at this value so it doesn’t reset to position 0
 	        return
-        motor.set_goal_position((dxl_unit+js_value)%4096)
+        self.motors[motor].set_goal_position(int(dxl_unit+js_value)%4096)
 
     def move(self, motor, axis, scaler):
         value = axis*scaler
@@ -88,6 +89,10 @@ class ArmPositionController:
 
     def move(self, x, y, delay=0):
         angles = self.ik(x, y)
+        for angle in angles:
+            if math.isnan(angle):
+                print("INVALID POSITION")
+                return
         thetas = {12: angles[0], 13: angles[1], 14: angles[2]}
         print(thetas)
         self.arm.set_angles(thetas, delay)

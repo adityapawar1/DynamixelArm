@@ -116,7 +116,7 @@ while not done:
             position = (position[0], position[1] + joystick.get_axis(3)*-0.5)
         
         if abs(joystick.get_axis(2)) >= 0.1:
-	        controller.arm.move(11, joystick.get_axis(2), -90)
+	        controller.arm.move(11, joystick.get_axis(2), -50)
 
         if move:
             controller.move(position[0], position[1])
@@ -144,7 +144,7 @@ while not done:
         if estop == 1:
             quit()
 
-        reboot_button = joystick.get_button(4)
+        reboot_button = joystick.get_button(0)
         if reboot_button == 1:
             controller.start_reboot_sequence()
             position = (0, 0)
