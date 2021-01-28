@@ -2,7 +2,7 @@ from dynamixel_helper import DxlHelper
 from time import sleep
 from constants import *
 from numpy import deg2rad, cos, sin, sqrt, arctan2, rad2deg
-import math.isnan
+import math
 
 class Arm:
     def __init__(self, ids, offsets):
