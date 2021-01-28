@@ -1,19 +1,14 @@
 import pygame
-from dynamixel_helper import DxlHelper
-from Arm import Arm, ArmPositionController
-from constants import *
+
 
 # Define some colors.
 BLACK = pygame.Color('black')
 WHITE = pygame.Color('white')
 
-arm = Arm(ids, offsets)
-controller = ArmPositionController(arm)
-arm.set_torque(ids, True)
-torque = True
-position = (0, 0)
-controller.move(position[0], position[1])
 
+# This is a simple class that will help us print to the screen.
+# It has nothing to do with the joysticks, just outputting the
+# information.
 class TextPrint(object):
     def __init__(self):
         self.reset()
@@ -55,9 +50,13 @@ pygame.joystick.init()
 # Get ready to print.
 textPrint = TextPrint()
 
-
 # -------- Main Program Loop -----------
 while not done:
+    #
+    # EVENT PROCESSING STEP
+    #
+    # Possible joystick actions: JOYAXISMOTION, JOYBALLMOTION, JOYBUTTONDOWN,
+    # JOYBUTTONUP, JOYHATMOTION
     for event in pygame.event.get(): # User did something.
         if event.type == pygame.QUIT: # If user clicked close.
             done = True # Flag that we are done so we exit this loop.
@@ -66,6 +65,11 @@ while not done:
         elif event.type == pygame.JOYBUTTONUP:
             print("Joystick button released.")
 
+    #
+    # DRAWING STEP
+    #
+    # First, clear the screen to white. Don't put other drawing commands
+    # above this, or they will be erased with this command.
     screen.fill(WHITE)
     textPrint.reset()
 
@@ -105,26 +109,6 @@ while not done:
         axes = joystick.get_numaxes()
         textPrint.tprint(screen, "Number of axes: {}".format(axes))
         textPrint.indent()
-        move = False
-        
-        if abs(joystick.get_axis(1)) >= 0.1:
-            move = True
-            position = (position[0] + joystick.get_axis(1)*-0.5, position[1])
-            
-        if abs(joystick.get_axis(3)) >= 0.1:
-            move = True
-            position = (position[0], position[1] + joystick.get_axis(3)*-0.5)
-        
-        if abs(joystick.get_axis(2)) >= 0.1:
-	    controller.arm.move(11, joystick.get_axis(2), 50)
-
-	if move:
-            controller.move(position[0], position[1])
-
-        # arm.move(11, joystick.get_axis(2), -100)
-        # arm.move(12, joystick.get_axis(3), 70)
-        # arm.move(13, joystick.get_axis(1), 70)
-        # arm.move(14, joystick.get_axis(0), 70)
 
         for i in range(axes):
             axis = joystick.get_axis(i)
@@ -134,28 +118,11 @@ while not done:
         buttons = joystick.get_numbuttons()
         textPrint.tprint(screen, "Number of buttons: {}".format(buttons))
         textPrint.indent()
-        
-        button = joystick.get_button(2)
-        if button == 1:
-                torque = not torque
-                arm.set_torque(ids, torque)
-                
-        estop = joystick.get_button(3)
-        if estop == 1:
-            quit()
-            
-        # 11, 12
-        if joystick.get_button(10) == 1:
-            arm.move(15, 1, 70)
-        elif joystick.get_button(11) == 1:
-            arm.move(15, 1, -70)
-        
+
         for i in range(buttons):
             button = joystick.get_button(i)
             textPrint.tprint(screen,
                              "Button {:>2} value: {}".format(i, button))
-            
-            
         textPrint.unindent()
 
         hats = joystick.get_numhats()
@@ -170,15 +137,7 @@ while not done:
         textPrint.unindent()
 
         textPrint.unindent()
-        
-        #values = arm.get_motor_encoders()
-        #for value in values:    
-        #    textPrint.tprint(screen, f"ID {value[0]}: Position: {value[1]}")
-        
-        
-        
-        
-        
+
     #
     # ALL CODE TO DRAW SHOULD GO ABOVE THIS COMMENT
     #
