@@ -2,6 +2,7 @@ from dynamixel_helper import DxlHelper
 from time import sleep
 from constants import *
 from numpy import deg2rad, cos, sin, sqrt, arctan2, rad2deg
+import math.isnan
 
 class Arm:
     def __init__(self, ids, offsets):
@@ -83,7 +84,10 @@ class ArmPositionController:
 
     def move(self, x, y):
         angles = self.ik(x, y)
-        
+	for angle in angles:
+	    if math.isnan(angle):
+		print("NOT MOVING: NAN")
+		return	        
         thetas = {12: angles[0], 13: angles[1], 14: angles[2]}
         print(thetas)
         self.arm.set_angles(thetas)
