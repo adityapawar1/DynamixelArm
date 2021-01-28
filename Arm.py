@@ -1,8 +1,8 @@
 from dynamixel_helper import DxlHelper
+from inputs import get_gamepad
 from time import sleep
 from constants import *
 from numpy import deg2rad, cos, sin, sqrt, arctan2, rad2deg
-import math
 
 class Arm:
     def __init__(self, ids, offsets):
@@ -25,25 +25,31 @@ class Arm:
         position = self.theta_to_pos(theta + self.motor_offsets[id])
         self.motors[id].set_goal_position(position)
 
-    def set_angles(self, angles):
+    def set_angles(self, angles, delay=0):
         for id, theta in angles.items():
             position = self.theta_to_pos(theta + self.motor_offsets[id])
             self.motors[id].set_goal_position(position)
-            # sleep(1)
+            sleep(delay)
     
-    def read_write_position(self, motor,js_value):
-        if abs(js_value) <= 0.1:
-            return
-        
+    def read_write_positon(self, motor,js_value):
         dxl_unit,res= self.motors[motor].get_present_position()
         if (dxl_unit+js_value) >= 4096: #cap the motor at this value so it doesn’t reset to position 0
 	        return
-        self.motors[motor].set_goal_position((int(dxl_unit+js_value))%4096)
+        motor.set_goal_position((dxl_unit+js_value)%4096)
 
     def move(self, motor, axis, scaler):
         value = axis*scaler
         self.read_write_position(motor, value)
 
+    def reboot(self, motor):
+        self.motors[motor].reboot()
+        sleep(1)
+
+    def reboot_all(self):
+        for id, motor in self.motors.items():
+            motor.reboot()
+
+        sleep(3)
 
 class ArmPositionController:
     def __init__(self, arm):
@@ -77,31 +83,28 @@ class ArmPositionController:
         print('theta_1: ', rad2deg(theta_1)+180-14.25)
         print('theta_2: ', rad2deg(theta_2)+90+14.25)
         print('theta_3: ', rad2deg(theta_3))
-        
-        
 
         return (rad2deg(theta_1)+180, rad2deg(theta_2)+90, rad2deg(theta_3))
 
-    def move(self, x, y):
+    def move(self, x, y, delay=0):
         angles = self.ik(x, y)
-        for angle in angles:
-            if math.isnan(angle):
-                print("NOT MOVING: NAN")
-                return	        
         thetas = {12: angles[0], 13: angles[1], 14: angles[2]}
         print(thetas)
-        self.arm.set_angles(thetas)
+        self.arm.set_angles(thetas, delay)
 
 if __name__ == "__main__":
     arm = Arm(ids, offsets)
     controller = ArmPositionController(arm)
+    # arm.reboot(15)
+    arm.reboot_all()
+    sleep(3)
     arm.set_torque(ids, True)
-    controller.move(0, 0)
-    sleep(1)
-    controller.move(5, 0)
-    sleep(1)
-    controller.move(5, 5)
-    sleep(1)
-    controller.move(10, 10)
-    # arm.set_torque(ids, True)
-    # arm.set_angles({12: 180, 13: 180, 14: 180})
+    controller.move(0, 0, delay=1)
+# sleep(1)
+# controller.move(5, 0)
+# sleep(1)
+# controller.move(5, 5)
+# sleep(1)
+# controller.move(10, 10)
+# # arm.set_torque(ids, True)
+# arm.set_angles({12: 180, 13: 180, 14: 180})

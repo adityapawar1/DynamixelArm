@@ -135,14 +135,21 @@ while not done:
         textPrint.tprint(screen, "Number of buttons: {}".format(buttons))
         textPrint.indent()
         
-        button = joystick.get_button(2)
-        if button == 1:
-                torque = not torque
-                arm.set_torque(ids, torque)
+        torque_button = joystick.get_button(2)
+        if torque_button == 1:
+            torque = not torque
+            arm.set_torque(ids, torque)
                 
         estop = joystick.get_button(3)
         if estop == 1:
             quit()
+
+        reboot_button = joystick.get_button(4)
+        if reboot_button == 1:
+            arm.reboot_all()
+            arm.set_torque(ids, True)
+            controller.move(0, 0, delay=1)
+            position = (0, 0)
             
         # 11, 12
         if joystick.get_button(10) == 1:
