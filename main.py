@@ -146,9 +146,7 @@ while not done:
 
         reboot_button = joystick.get_button(4)
         if reboot_button == 1:
-            arm.reboot_all()
-            arm.set_torque(ids, True)
-            controller.move(0, 0, delay=1)
+            controller.start_reboot_sequence()
             position = (0, 0)
             
         # 11, 12

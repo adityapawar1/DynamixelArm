@@ -92,14 +92,17 @@ class ArmPositionController:
         print(thetas)
         self.arm.set_angles(thetas, delay)
 
+    def start_reboot_sequence(self):
+        self.arm.reboot_all()
+        self.arm.set_torque(ids, True)
+        self.move(0, 0, delay=1)
+
 if __name__ == "__main__":
     arm = Arm(ids, offsets)
     controller = ArmPositionController(arm)
+    controller.start_reboot_sequence()
     # arm.reboot(15)
-    arm.reboot_all()
-    sleep(3)
-    arm.set_torque(ids, True)
-    controller.move(0, 0, delay=1)
+    
 # sleep(1)
 # controller.move(5, 0)
 # sleep(1)
