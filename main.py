@@ -10,9 +10,13 @@ WHITE = pygame.Color('white')
 arm = Arm(ids, offsets)
 controller = ArmPositionController(arm, rotation_motor)
 arm.set_torque(ids, True)
+
 torque = True
 position = (0, 0)
 rotation = 180
+
+arm.set_angle(12, 190)
+controller.rotate(180)
 controller.move(position[0], position[1], delay=1)
 
 class TextPrint(object):
@@ -176,8 +180,11 @@ while not done:
             textPrint.tprint(screen, "Hat {} value: {}".format(i, str(hat)))
         textPrint.unindent()
 
-        textPrint.unindent()
-        
+        textPrint.tprint(screen, "Position: {}".format(position))
+        textPrint.tprint(screen, "Rotation: {}".format(rotation))
+        textPrint.tprint(screen, "Torque: {}".format(torque))
+
+        textPrint.unindent()        
         #values = arm.get_motor_encoders()
         #for value in values:    
         #    textPrint.tprint(screen, f"ID {value[0]}: Position: {value[1]}")
@@ -194,7 +201,7 @@ while not done:
     pygame.display.flip()
 
     # Limit to 20 frames per second.
-    clock.tick(20)
+    clock.tick(60)
 
 # Close the window and quit.
 # If you forget this line, the program will 'hang'

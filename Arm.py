@@ -7,7 +7,7 @@ import math
 
 class Arm:
     def __init__(self, ids, offsets):
-        self.helper = DxlHelper("preset.json", verbosity="detailed")
+        self.helper = DxlHelper("preset.json", verbosity="minimal")
         self.ids = ids
         self.motors = {}
         self.motor_offsets = offsets
@@ -81,9 +81,9 @@ class ArmPositionController:
         theta_1 = arctan2(s1,c1)
         theta_3 = phi-theta_1-theta_2
 
-        print('theta_1: ', rad2deg(theta_1)+180-14.25)
-        print('theta_2: ', rad2deg(theta_2)+90+14.25)
-        print('theta_3: ', rad2deg(theta_3))
+        # print('theta_1: ', rad2deg(theta_1)+180-14.25)
+        # print('theta_2: ', rad2deg(theta_2)+90+14.25)
+        # print('theta_3: ', rad2deg(theta_3))
 
         return (rad2deg(theta_1)+180, rad2deg(theta_2)+90, rad2deg(theta_3))
 
