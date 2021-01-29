@@ -8,7 +8,7 @@ BLACK = pygame.Color('black')
 WHITE = pygame.Color('white')
 
 arm = Arm(ids, offsets)
-controller = ArmPositionController(arm)
+controller = ArmPositionController(arm, rotation_motor)
 arm.set_torque(ids, True)
 torque = True
 position = (0, 0)
