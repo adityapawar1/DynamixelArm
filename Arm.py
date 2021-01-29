@@ -53,9 +53,9 @@ class Arm:
         sleep(3)
 
 class ArmPositionController:
-    def __init__(self, arm):
+    def __init__(self, arm, rotation_motor):
         self.arm = arm
-        pass
+        self.rotation_motor = rotation_motor
 
     def ik(self, py, px):
         # Desired Position of End effector
@@ -97,6 +97,9 @@ class ArmPositionController:
         print(thetas)
         self.arm.set_angles(thetas, delay)
 
+    def rotate(self, angle):
+        self.arm.set_angle(self.rotation_motor, angle)
+
     def start_reboot_sequence(self):
         self.arm.reboot_all()
         self.arm.set_torque(ids, True)
@@ -104,8 +107,9 @@ class ArmPositionController:
 
 if __name__ == "__main__":
     arm = Arm(ids, offsets)
-    controller = ArmPositionController(arm)
-    controller.start_reboot_sequence()
+    controller = ArmPositionController(arm, rotation_motor)
+    # controller.start_reboot_sequence()
+    arm.set_angle(11, 180)
     # arm.reboot(15)
     
 # sleep(1)
