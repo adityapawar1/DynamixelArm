@@ -121,7 +121,7 @@ while not done:
             position = (position[0], position[1] + joystick.get_axis(3)*-0.5)
         
         if abs(joystick.get_axis(2)) >= 0.1:
-            rotation += joystick.get_axis(2) * -5
+            rotation += joystick.get_axis(2) * -2
             controller.rotate(rotation)
 
         if move:

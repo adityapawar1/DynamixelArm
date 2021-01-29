@@ -94,7 +94,6 @@ class ArmPositionController:
                 print("INVALID POSITION")
                 return
         thetas = {12: angles[0], 13: angles[1], 14: angles[2]}
-        print(thetas)
         self.arm.set_angles(thetas, delay)
 
     def rotate(self, angle):
