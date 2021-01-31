@@ -1,3 +1,4 @@
+#! /usr/bin/env python
 import rospy
 import math
 from geometry_msgs.msg import Vector3
@@ -41,16 +42,28 @@ rospy.Subscriber("dynamixel_arm_joystick", Vector3, callback_arm_joystick)
 rospy.Subscriber("dynamixel_arm_torque", Bool, callback_arm_torque)
 rospy.Subscriber("dynamixel_arm_reboot", Bool, callback_arm_reboot)
 
+#setup the publishers
+publisher_arm_x = rospy.Publisher('arm_out_x', Float64, queue_size=3)
+publisher_arm_y = rospy.Publisher('arm_out_y', Float64, queue_size=3)
+publisher_arm_reboot = rospy.Publisher('arm_out_reboot', Bool, queue_size=1)
+publisher_arm_torque = rospy.Publisher('arm_out_torque', Bool, queue_size=1)
+
 rate = rospy.Rate(20)
+controller.start_reboot_sequence()
 while not rospy.is_shutdown():
+    publisher_arm_reboot.publish(reboot)
+    publisher_arm_torque.publish(torque)
     # if reboot:
     #     controller.start_reboot_sequence()
     #     reboot = False
     #     continue
 
-    # if abs(delta_x) + abs(delta_y) > 0:
-    #     x, y = position
-    #     position = (x + delta_x, y + delta_y)
-    #     controller.move(position[0], position[1])
+    if abs(delta_x) + abs(delta_y) > 0:
+        x, y = position
+        position = (x + delta_x, y + delta_y)
+        controller.move(position[0], position[1])
+        publisher_arm_x.publish(position[0])
+        publisher_arm_y.publish(position[1])
+
     rate.sleep()
     pass
