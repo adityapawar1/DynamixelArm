@@ -1,5 +1,5 @@
 {
-    "ports":[ "/dev/ttyUSB0" ],
+    "ports":[ "/dev/tty.usbserial-FT4TCRQV" ],
     "baud rates": "auto",
     "protocol versions": [ 2.0 ],
     "motors":[

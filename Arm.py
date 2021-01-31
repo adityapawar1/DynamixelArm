@@ -1,5 +1,5 @@
+from __future__ import division
 from dynamixel_helper import DxlHelper
-from inputs import get_gamepad
 from time import sleep
 from constants import *
 from numpy import deg2rad, cos, sin, sqrt, arctan2, rad2deg
@@ -7,7 +7,7 @@ import math
 
 class Arm:
     def __init__(self, ids, offsets):
-        self.helper = DxlHelper("preset.json", verbosity="minimal")
+        self.helper = DxlHelper("preset.json", verbosity="detailed")
         self.ids = ids
         self.motors = {}
         self.motor_offsets = offsets
@@ -34,7 +34,7 @@ class Arm:
     
     def read_write_position(self, motor,js_value):
         dxl_unit,res= self.motors[motor].get_present_position()
-        if (dxl_unit+js_value) >= 4096: #cap the motor at this value so it doesn’t reset to position 0
+        if (dxl_unit+js_value) >= 4096:
 	        return
         self.motors[motor].set_goal_position(int(dxl_unit+js_value)%4096)
 
@@ -108,8 +108,9 @@ class ArmPositionController:
 if __name__ == "__main__":
     arm = Arm(ids, offsets)
     controller = ArmPositionController(arm, rotation_motor)
+    controller.move(10, 10)
     # controller.start_reboot_sequence()
-    arm.set_angle(11, 180)
+    # arm.set_angle(11, 180)
     # arm.reboot(15)
     
 # sleep(1)
