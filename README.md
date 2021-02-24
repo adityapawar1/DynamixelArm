@@ -2,6 +2,7 @@
 Code for manipulating a a 3DOF arm made of 6 XM430-W350 daisy chained dynamixels in 2d space using inverse kinematics
 
 also didnt do the math which is the hard part, just implemented it in code
+code for the Arm is is Arm.py, everything else is other ros nodes for controlling the robot
 
 Dependencies: DynamixelSDk, dynamixel_helper, pygame(for now), numpy 
 
